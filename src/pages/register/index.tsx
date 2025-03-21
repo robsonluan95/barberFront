@@ -1,15 +1,30 @@
 import Head from "next/head"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import Image from "next/image"
 import logo from '../../../public/logo.svg'
 import { Flex,Text,Center,Input, Button } from "@chakra-ui/react"
 import Link from "next/link"
+import { AuthContext } from "@/src/context/AuthContext"
 
 export default function Register() {
+    const {signUp}=useContext(AuthContext)
+    const [loading,setLoading]=useState(false)
     const [name,setName]=useState("")
     const [email,setEmail]=useState("")
     const [password,setPassword]=useState("")
-    function handleRegister(){
+
+    async function handleRegister(){
+      if(name ==='' || email==='' || password===''){
+        return;
+      }
+      setLoading(true)
+      try{
+        await signUp({name,email,password})
+      }catch(error){
+        console.error("Error",error)
+      }finally{
+        setLoading(false)
+      }
         
     }
   return (
@@ -63,6 +78,7 @@ export default function Register() {
                 size="lg"
                 _hover={{bg:"#ffb13e"}}
                 onClick={() => handleRegister()}
+                isLoading={loading}
             >
                 Cadastrar
             </Button>
