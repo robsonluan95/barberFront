@@ -61,9 +61,15 @@ export function AuthProvider({children}:AuthProviderProps){
     //Função de Login
 
     async function signIn({email,password}:SignInProps) {
+        
         try{
+            console.log("PASSOU",email,password)
             //Fazemos o login , passando o email senha
-            const response = await api.post("/session",{email,password})
+            console.log("URL da API:", api.defaults.baseURL);
+            console.log("Enviando email:", email);
+            console.log("Enviando senha:", password);
+            const response = await api.post("/session",{password,email})
+            console.log("PASSOU 3")
             //Pegamos o retorno das informações 
             const{id,name,token,subscriptions,endereco} = response.data
             //setando o cookie duração de 1 mes e em todas as paginas
@@ -73,7 +79,7 @@ export function AuthProvider({children}:AuthProviderProps){
             })
             //setamos no usurário as informações que buscamos 
             setUser({id,name,email,endereco,subscriptions})
-
+            
             //colocando o token em todos os headers das requisições 
             api.defaults.headers.common['Authorization']= `Bearer ${token}`
 
@@ -81,7 +87,14 @@ export function AuthProvider({children}:AuthProviderProps){
             Router.push('/dashboard')
 
         }catch(err){
-            console.error('Erro ao fazer login',err)
+            if (err.response) {
+                console.error("Erro ao fazer login - Resposta da API:", err.response.data);
+                console.error("Status Code:", err.response.status);
+            } else if (err.request) {
+                console.error("Erro ao fazer login - Sem resposta do servidor", err.request);
+            } else {
+                console.error("Erro ao fazer login - Configuração da requisição", err.message);
+            }
         }
     }
 
