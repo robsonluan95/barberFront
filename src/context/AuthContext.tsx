@@ -1,5 +1,5 @@
-import {createContext,ReactNode,useState} from 'react'
-import { destroyCookie,setCookie } from 'nookies';
+import {createContext,ReactNode,useState,useEffect} from 'react'
+import { destroyCookie,setCookie,parseCookies } from 'nookies';
 import  Router  from 'next/router';
 
 import {api} from '../services/apiClient'
@@ -58,18 +58,29 @@ export function AuthProvider({children}:AuthProviderProps){
     const [user,setUser]=useState<UserProps>()
     const isAuthenticated = !!user;
 
+    useEffect (()=>{
+        const {'@barber.token':token}=parseCookies();
+        if (token){
+            api.get('/me').then(response=>{
+                const {id,name,endereco,email,subscriptions}=response.data
+                setUser({
+                    id,name,email,endereco,subscriptions
+                })
+
+            }).catch(()=>{
+                signOut()
+            })
+        }
+    },[])
+
+
     //Função de Login
 
     async function signIn({email,password}:SignInProps) {
         
         try{
-            console.log("PASSOU",email,password)
             //Fazemos o login , passando o email senha
-            console.log("URL da API:", api.defaults.baseURL);
-            console.log("Enviando email:", email);
-            console.log("Enviando senha:", password);
             const response = await api.post("/session",{password,email})
-            console.log("PASSOU 3")
             //Pegamos o retorno das informações 
             const{id,name,token,subscriptions,endereco} = response.data
             //setando o cookie duração de 1 mes e em todas as paginas
