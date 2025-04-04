@@ -1,5 +1,5 @@
-import {createContext,ReactNode,useState} from 'react'
-import { destroyCookie,setCookie } from 'nookies';
+import {createContext,ReactNode,useState,useEffect} from 'react'
+import { destroyCookie,setCookie,parseCookies } from 'nookies';
 import  Router  from 'next/router';
 
 import {api} from '../services/apiClient'
@@ -58,12 +58,29 @@ export function AuthProvider({children}:AuthProviderProps){
     const [user,setUser]=useState<UserProps>()
     const isAuthenticated = !!user;
 
+    useEffect (()=>{
+        const {'@barber.token':token}=parseCookies();
+        if (token){
+            api.get('/me').then(response=>{
+                const {id,name,endereco,email,subscriptions}=response.data
+                setUser({
+                    id,name,email,endereco,subscriptions
+                })
+
+            }).catch(()=>{
+                signOut()
+            })
+        }
+    },[])
+
+
     //Função de Login
 
     async function signIn({email,password}:SignInProps) {
+        
         try{
             //Fazemos o login , passando o email senha
-            const response = await api.post("/session",{email,password})
+            const response = await api.post("/session",{password,email})
             //Pegamos o retorno das informações 
             const{id,name,token,subscriptions,endereco} = response.data
             //setando o cookie duração de 1 mes e em todas as paginas
@@ -73,7 +90,7 @@ export function AuthProvider({children}:AuthProviderProps){
             })
             //setamos no usurário as informações que buscamos 
             setUser({id,name,email,endereco,subscriptions})
-
+            
             //colocando o token em todos os headers das requisições 
             api.defaults.headers.common['Authorization']= `Bearer ${token}`
 
@@ -81,7 +98,14 @@ export function AuthProvider({children}:AuthProviderProps){
             Router.push('/dashboard')
 
         }catch(err){
-            console.error('Erro ao fazer login',err)
+            if (err.response) {
+                console.error("Erro ao fazer login - Resposta da API:", err.response.data);
+                console.error("Status Code:", err.response.status);
+            } else if (err.request) {
+                console.error("Erro ao fazer login - Sem resposta do servidor", err.request);
+            } else {
+                console.error("Erro ao fazer login - Configuração da requisição", err.message);
+            }
         }
     }
 

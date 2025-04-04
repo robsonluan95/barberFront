@@ -5,6 +5,7 @@ import logo from '../../../public/logo.svg'
 import { Flex,Text,Center,Input, Button } from "@chakra-ui/react"
 import Link from "next/link"
 import { AuthContext } from "@/src/context/AuthContext"
+import { canSSRGuest } from "@/src/utils/canSSRGuest"
 
 export default function Register() {
     const {signUp}=useContext(AuthContext)
@@ -94,3 +95,9 @@ export default function Register() {
     </>
   )
 }
+
+export const getServerSideProps = canSSRGuest(async(ctx)=>{
+  return {
+    props: {}
+  }
+})
