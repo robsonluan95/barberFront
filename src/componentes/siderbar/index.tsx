@@ -1,4 +1,4 @@
-import { Children, ReactNode } from "react";
+import {ReactNode } from "react";
 import {
     IconButton,Box,CloseButton,
     Flex,Icon,Drawer,DrawerContent,
@@ -35,12 +35,14 @@ export function Sidebar({children}:{children:ReactNode}){
                 onClose={()=>onClose}
                 display={{base:'none',md:'block'}}
             />
+
             <Drawer 
                 autoFocus={false}
                 isOpen={isOpen}
                 placement="left"
                 returnFocusOnClose={false}
                 size='full'
+                onOverlayClick={onClose}
                 onClose={onClose}
             >   
                 <DrawerContent>
@@ -50,7 +52,7 @@ export function Sidebar({children}:{children:ReactNode}){
             </Drawer>
             <MobileNav display={{ base: 'flex', md: 'none' }} onOpen={onOpen} />
            
-            <Box>
+            <Box ml={{base:0,md:60}} p={4}>
                 {children}
             </Box>
         </Box>
@@ -67,9 +69,9 @@ const SiderbarContent =({onClose,...rest}:SidebarProps)=>{
         bg='barber.400'
         borderRight='1px'
         borderRightColor={useColorModeValue('gray.700','gray.700')}
-        w={{base:'fll',md:60}}
+        w={{base:'full',md:60}}
         pos='fixed'
-        h='full'
+        h="full"
         {...rest}
         >
             <Flex h="20" alignItems="center" justifyContent='space-between' mx="8">
@@ -99,26 +101,26 @@ interface NavItemProps  extends FlexProps{
 const NavItem =({icon,children,route,...rest})=>{
     return(
         <Link href={route} style={{textDecoration:'none'}}>
-        <Flex
-            align='center'
-            p='4'
-            mx='4'
-            borderRadius='lg'
-            role='group'
-            cursor='pointer'
-            _hover={{
-                bg:"barber.900",
-                color:'white'
-            }}
-            {...rest}
-        >
-            {icon&&(
-                <Icon
-                    mr={4} fontSize='16' as={icon} _groupHover={{color:'white'}}
-                />
-            )}
-            {children}
-        </Flex>
+            <Flex
+                align='center'
+                p='4'
+                mx='4'
+                borderRadius='lg'
+                role='group'
+                cursor='pointer'
+                _hover={{
+                    bg:"barber.900",
+                    color:'button.cta'
+                }}
+                {...rest}
+            >
+                    {icon&&(
+                        <Icon
+                            mr={4} fontSize='16' as={icon} _groupHover={{color:'white'}}
+                        />
+                    )}
+                    {children}
+            </Flex>
     </Link>
     )
 }
@@ -131,23 +133,24 @@ const MobileNav =({onOpen,...rest}:MobileProps) =>{
     return(
         <Flex
             ml={{base:0,md:60}}
-            px={{base:4,mb:24}}
-            height='20'
-            alignItems='center'
+            px={{base:4,md:24}}
+            height="20"
+            alignItems="center"
             bg={useColorModeValue('gray.900','gray.700')}
             borderBottomWidth='1px'
-            borderBottomColor={useColorModeValue('gray.700','gray.9
-            00')}
+            borderBottomColor={useColorModeValue('gray.100','gray.500')}
             justifyContent='flex-start'
-            {...rest}
-
-        >
+            {...rest}>
+                
             <IconButton
                 variant='outline'
                 onClick={onOpen}
                 aria-label="open menu"
-                icon={<FiMenu/>}
-            />
+                icon={<FiMenu/>}/>
+            <Flex flexDirection='row'>
+                <Text ml={8} fontSize='2xl' fontFamily='monospace' fontWeight='bold'>Barber </Text>
+                <Text fontSize='2xl' fontFamily='monospace' fontWeight='bold' color="button.cta">PRO</Text>
+            </Flex>
         </Flex>
     )
 }
