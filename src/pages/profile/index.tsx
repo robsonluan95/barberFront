@@ -13,6 +13,8 @@ import { Sidebar } from '../../componentes/siderbar'
 import { canSSRAuth } from '../../utils/canSSRAuth'
 import { AuthContext } from '@/src/context/AuthContext'
 import {setupAPIClient} from '../../services/api'
+import { UpdateUserProps } from '@/src/context/AuthContext'
+
 
 interface UserProps {
     id: string;
@@ -27,7 +29,7 @@ interface profilePros{
 }
 
 export default function Profile({user,premium}: profilePros) {
-    const { logoutUser } = useContext(AuthContext)
+    const { logoutUser,updateUser } = useContext(AuthContext)
     const [name,setName] = useState(user && user?.name)
     const [endereco,setEndereco]=useState(user && user?.endereco)
 
@@ -36,6 +38,13 @@ export default function Profile({user,premium}: profilePros) {
         await logoutUser()
     }
 
+    async function handleUpdate(){
+        if (name === ''){
+            return
+        }
+        await updateUser({name,endereco})
+
+    }
     return (
         <>
             <Head>
@@ -101,6 +110,7 @@ export default function Profile({user,premium}: profilePros) {
                                 bg="button.cta"
                                 size="lg"
                                 _hover={{ bg: '#ffb13e' }}
+                                onClick={handleUpdate}
                             >
                                 Salvar
                             </Button>

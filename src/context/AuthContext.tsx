@@ -11,6 +11,7 @@ interface AuthContextData{
     isAuthenticated:boolean;
     signIn:(credentials:SignInProps)=>Promise<void>;
     signUp:(credentials:SignUpProps)=>Promise<void>;
+    updateUser:(credentials:UpdateUser)=>Promise<void>;
     logoutUser:()=>Promise<void>;
 }
 interface SignUpProps{
@@ -40,6 +41,10 @@ interface AuthProviderProps{
 interface SignInProps{
     email:string;
     password:string;
+}
+export interface UpdateUserProps{
+    name:string;
+    endereco:string
 }
 
 export const AuthContext = createContext({} as AuthContextData )
@@ -122,6 +127,16 @@ export function AuthProvider({children}:AuthProviderProps){
         
          
     }
+    //Função de Update
+    async function updateUser({name,endereco}:UpdateUserProps){
+        try{
+            const response = await api.put('/meupdate',{name,endereco})
+            alert('Dados alterados')
+        }catch(error){
+            console.log('Error',error)
+        }
+
+    }
 
     async function logoutUser(){
         try{
@@ -136,7 +151,8 @@ export function AuthProvider({children}:AuthProviderProps){
 
 
     return (
-        <AuthContext.Provider value={{isAuthenticated,user,signIn,signUp,logoutUser}}>
+        <AuthContext.Provider value={{isAuthenticated,user,signIn,signUp,logoutUser,updateUser
+        }}>
             {children}
         </AuthContext.Provider>
     )
