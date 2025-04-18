@@ -11,7 +11,7 @@ interface AuthContextData{
     isAuthenticated:boolean;
     signIn:(credentials:SignInProps)=>Promise<void>;
     signUp:(credentials:SignUpProps)=>Promise<void>;
-    updateUser:(credentials:UpdateUser)=>Promise<void>;
+    updateUser:(credentials:UpdateUserProps)=>Promise<void>;
     logoutUser:()=>Promise<void>;
 }
 interface SignUpProps{

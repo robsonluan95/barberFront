@@ -2,7 +2,7 @@ import Head from 'next/head'
 import {Flex,Text} from "@chakra-ui/react"
 
 import { canSSRAuth } from '@/src/utils/canSSRAuth'
-import {Sidebar} from '../../componentes/siderbar'
+import {Sidebar} from '../../componentes/sidebar'
 
 export default function Dashboard(){
     return(

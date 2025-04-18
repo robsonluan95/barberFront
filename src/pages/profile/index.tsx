@@ -9,7 +9,7 @@ import {
     Link,
     Button,
 } from '@chakra-ui/react'
-import { Sidebar } from '../../componentes/siderbar'
+import { Sidebar } from '../../componentes/sidebar'
 import { canSSRAuth } from '../../utils/canSSRAuth'
 import { AuthContext } from '@/src/context/AuthContext'
 import {setupAPIClient} from '../../services/api'
@@ -43,6 +43,7 @@ export default function Profile({user,premium}: profilePros) {
             return
         }
         await updateUser({name,endereco})
+        
 
     }
     return (
