@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link"
 import { Sidebar } from "@/src/componentes/sidebar";
+import {IoMdPricetag} from "react-icons/io"
 
 import { Flex, Heading, Text, Button, Stack, Switch, useMediaQuery } from "@chakra-ui/react"
 
@@ -48,18 +49,20 @@ export default function Haircuts() {
                                 cursor="pointer"
                                 w="100%"
                                 p={4}
-                                bg="barber.100"
+                                bg="barber.400"
                                 direction="row"
                                 rounded="4"
                                 mb={2}
                                 justifyContent="space-between"
                             >
-                                <Flex>
-                                    <Text>
+                                <Flex direction="row" align="center" justifyContent="center">
+                                    <IoMdPricetag size={28} color="#fba931" />
+                                    <Text fontWeight="bold" ml={4} noOfLines={2} color="#white" >
                                         Corte completo
                                     </Text>
 
-                                </Flex>
+                                </Flex >
+                                <Text fontWeight="bold">Preço: R$ 59.90</Text>
 
                             </Flex>
                         </Link>
