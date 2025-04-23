@@ -1,12 +1,29 @@
 import Head from "next/head";
 import Link from "next/link"
 import { Sidebar } from "@/src/componentes/sidebar";
-import {IoMdPricetag} from "react-icons/io"
+import { IoMdPricetag } from "react-icons/io"
+import { setupAPIClient } from "@/src/services/api";
+
+import { canSSRAuth } from "../../utils/canSSRAuth"
 
 import { Flex, Heading, Text, Button, Stack, Switch, useMediaQuery } from "@chakra-ui/react"
+import { useState } from "react";
 
-export default function Haircuts() {
+interface haircutProps {
+    id: string;
+    name: string;
+    price: number | string;
+    status: boolean;
+    user_id: string;
+}
+
+interface listHaircutProps {
+    haircuts: haircutProps[];
+}
+
+export default function Haircuts({ haircuts }: listHaircutProps) {
     const [isMobile] = useMediaQuery("(max-width: 500px)")
+    const [haircutList, setHaircutList] = useState(haircuts || [])
 
     return (
         <>
@@ -29,7 +46,7 @@ export default function Haircuts() {
                             alignItems='center'
                             justifyContent="flex-start"
                             mb={0}>
-                            <Link href='/haircut/new'>
+                            <Link href='/haircuts/new'>
                                 <Button>Cadastrar novo</Button>
                             </Link>
 
@@ -39,44 +56,73 @@ export default function Haircuts() {
                             </Stack>
 
                         </Flex >
-                       
+
 
 
                     </Flex>
-                    <Link href="/haircut/123" style={{ width: '100%' }}
-                    >
+                    {haircutList.map(haircut => (
+                        <Link key={haircut.id} href={`/haircut/${haircut.id}`} style={{ width: '100%' }}
+                        >
                             <Flex
                                 cursor="pointer"
                                 w="100%"
                                 p={4}
                                 bg="barber.400"
-                                direction="row"
+                                direction={isMobile ? "column" : "row"}
+                                align={isMobile ? "flex-start" : "center"}
                                 rounded="4"
                                 mb={2}
                                 justifyContent="space-between"
                             >
-                                <Flex direction="row" align="center" justifyContent="center">
+                                <Flex mb={isMobile ? 2 : 0} direction="row" align="center" justifyContent="center">
                                     <IoMdPricetag size={28} color="#fba931" />
                                     <Text fontWeight="bold" ml={4} noOfLines={2} color="#white" >
-                                        Corte completo
+                                        {haircut.name}
                                     </Text>
 
                                 </Flex >
-                                <Text fontWeight="bold">Preço: R$ 59.90</Text>
+                                <Text fontWeight="bold">Preço: R$ {haircut.price}</Text>
 
                             </Flex>
                         </Link>
 
-
-
-
+                    ))}
                 </Flex>
             </Sidebar>
-
-
-
-
         </>
 
     )
 }
+
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+    try {
+        const api = setupAPIClient(ctx)
+        const response = await api.get("/haircut", {
+            params: {
+                status: true
+            }
+        })
+        if (response.data === null) {
+            return {
+                redirect: {
+                    destination: "/dashboard",
+                    permanent: false
+                }
+            }
+        }
+        console.log(response.data)
+        return {
+            props: {
+                haircuts:response.data
+            }
+        }
+    } catch (err) {
+        console.log(err)
+    }
+    return {
+        redirect: {
+            destination: "/dashboard",
+            permanent: false
+        }
+    }
+})
