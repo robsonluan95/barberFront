@@ -7,7 +7,7 @@ import { setupAPIClient } from "@/src/services/api";
 import { canSSRAuth } from "../../utils/canSSRAuth"
 
 import { Flex, Heading, Text, Button, Stack, Switch, useMediaQuery } from "@chakra-ui/react"
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface haircutProps {
     id: string;
@@ -24,6 +24,37 @@ interface listHaircutProps {
 export default function Haircuts({ haircuts }: listHaircutProps) {
     const [isMobile] = useMediaQuery("(max-width: 500px)")
     const [haircutList, setHaircutList] = useState(haircuts || [])
+    const [disableHaircut,setDisableHaircut]=useState("enabled")
+
+
+    async function handleDisable(e:ChangeEvent<HTMLInputElement>){
+        const api=setupAPIClient();
+
+        if (disableHaircut==="enabled"){
+
+            setDisableHaircut("disabled")
+
+            const response = await api.get("/haircut",{
+                params:{
+                    status:true
+                }
+            })
+
+            setHaircutList(response.data)
+
+            
+        }else{
+            setDisableHaircut("enabled")
+            
+            const response = await api.get("/haircut",{
+                params:{
+                    status:false
+                }
+            })
+
+            setHaircutList(response.data)
+        }
+    }
 
     return (
         <>
@@ -52,7 +83,13 @@ export default function Haircuts({ haircuts }: listHaircutProps) {
 
                             <Stack ml='auto' alignItems="center" direction='row'>
                                 <Text fontWeight="bold">ATIVOS</Text>
-                                <Switch colorScheme="green" size="lg" />
+                                <Switch 
+                                    colorScheme="green" 
+                                    size="lg" 
+                                    value={disableHaircut}
+                                    onChange={(e:ChangeEvent<HTMLInputElement>)=>handleDisable(e)}    
+                                    isChecked={disableHaircut ==="disabled"?false:true}                               
+                                />
                             </Stack>
 
                         </Flex >
@@ -61,7 +98,7 @@ export default function Haircuts({ haircuts }: listHaircutProps) {
 
                     </Flex>
                     {haircutList.map(haircut => (
-                        <Link key={haircut.id} href={`/haircut/${haircut.id}`} style={{ width: '100%' }}
+                        <Link key={haircut.id} href={`/haircuts/${haircut.id}`} style={{ width: '100%' }}
                         >
                             <Flex
                                 cursor="pointer"
