@@ -1,11 +1,57 @@
+import {useState,ChangeEvent} from "react"
 import Head from  "next/head"
 import {Flex,Text,Heading,useMediaQuery, Button, Input, Stack, Switch} from "@chakra-ui/react"
 import { Sidebar } from "@/src/componentes/sidebar"
 import Link from "next/link"
 import { FiChevronLeft } from "react-icons/fi"
+import { canSSRAuth } from "@/src/utils/canSSRAuth"
+import { setupAPIClient } from "@/src/services/api"
 
-export default function EditHeading(){
+interface HaircutProps{
+	id: string;
+	name: string;
+	price: number|string;
+	status: boolean;
+	user_id: string;
+
+}
+
+interface SubscriptionProps{
+    id: string;
+    status:string;
+}
+
+interface EditHaircutProps{
+    haircut:HaircutProps;
+    subscriptions:SubscriptionProps|null;
+}
+
+
+export default function EditHeading({subscriptions,haircut}:EditHaircutProps){
     const [isMobile]=useMediaQuery("(max-width: 500px)")
+
+    const [name,setName] = useState(haircut?.name)
+    const [price,setPrice] = useState(haircut?.price)
+    const [status,setStatus] = useState(haircut?.status)
+
+    const [disableHaircut,setDisableHaircut] = useState(haircut?.status? "disabled" : "enabled")
+
+    function handleChangeStatus(e:ChangeEvent<HTMLInputElement>){
+        
+        if(e.target.value==="disabled"){
+            setDisableHaircut("enabled")
+            setStatus(false)
+        }else{
+            setDisableHaircut("disabled")
+            setStatus(true)
+        }
+        console.log(disableHaircut)
+    }
+
+    async function handleUpdate(){
+        alert("testsdsdse")
+    }
+
     return(
         <>
             <Head>
@@ -41,15 +87,19 @@ export default function EditHeading(){
                                 size="lg"
                                 type="text"
                                 w="100%"
+                                value={name }
+                                onChange={(e)=>setName(e.target.value)}
                             />
 
                             <Input
-                                placeholder="Valor do corte"
+                                placeholder= "Valor do corte"
                                 bg="gray.900"
                                 mb={3}
                                 size="lg"
                                 type="number"
                                 w="100%"
+                                value={price}
+                                onChange={(e)=>setPrice(e.target.value)}
                             />
 
 
@@ -58,6 +108,10 @@ export default function EditHeading(){
                                 <Switch
                                     size="lg"
                                     colorScheme="red"
+                                    value={disableHaircut}
+                                    isChecked={disableHaircut === "disabled" ? false : true}
+                                    onChange={(e:ChangeEvent<HTMLInputElement>)=>handleChangeStatus(e)}
+                                    
                                 />
                             </Stack>
 
@@ -67,9 +121,24 @@ export default function EditHeading(){
                                 bg="button.cta"
                                 color="gray.900"
                                 _hover={{bg:"#FFB13e"}}
+                                isDisabled={subscriptions?.status !== "active"}
+                                onClick={handleUpdate}
                             >
                                 Salvar
                             </Button>
+
+                            { subscriptions?.status !== "active" && (
+                                <Flex direction="row" align="center" justify="center" >
+                                    <Link href="/planos">
+                                        <Text fontWeight="bold" mr={1} color="#31fb6a" cursor="pointer">
+                                            Seja premium
+                                        </Text>
+                                    </Link>
+                                    <Text>
+                                        e tenha todos acessos liberados.
+                                    </Text>
+                                </Flex>
+                            )}
                         </Flex>
 
                     </Flex>
@@ -81,3 +150,34 @@ export default function EditHeading(){
         
     )
 }
+
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+    const { id } = ctx.params;
+    const api = setupAPIClient(ctx);
+
+    try {
+        const check = await api.get("/haircut/check");
+        const response = await api.get("haircut/details", {
+            params: {
+                haircut_id: id
+            }
+        });
+
+        return {
+            props: {
+                haircut: response.data,
+                subscriptions:check.data?.subscriptions
+
+            }
+        };
+
+    } catch (err) {
+        console.log(err);
+        return {
+            redirect: {
+                destination: "/haircuts",
+                permanent: false
+            }
+        };
+    }
+});

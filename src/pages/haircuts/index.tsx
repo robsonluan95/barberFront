@@ -147,7 +147,7 @@ export const getServerSideProps = canSSRAuth(async (ctx) => {
                 }
             }
         }
-        console.log(response.data)
+        
         return {
             props: {
                 haircuts:response.data
