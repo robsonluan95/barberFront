@@ -49,7 +49,28 @@ export default function EditHeading({subscriptions,haircut}:EditHaircutProps){
     }
 
     async function handleUpdate(){
-        alert("testsdsdse")
+
+        if (name === ""|| price=== ""){
+            return
+        }
+        try {
+            const api = setupAPIClient()
+            await api.put("/haircut",{
+                name:name,
+                price: parseFloat(price),
+                status:status,
+                haircut_id:haircut?.id
+            })
+            alert("Corte atualizado")
+            
+        } catch (error) {
+            console.log(error)
+        }
+        
+
+       
+
+
     }
 
     return(
