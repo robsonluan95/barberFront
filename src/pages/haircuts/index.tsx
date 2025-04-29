@@ -33,10 +33,9 @@ export default function Haircuts({ haircuts }: listHaircutProps) {
         if (disableHaircut==="enabled"){
 
             setDisableHaircut("disabled")
-
             const response = await api.get("/haircut",{
                 params:{
-                    status:true
+                    status:false
                 }
             })
 
@@ -45,10 +44,9 @@ export default function Haircuts({ haircuts }: listHaircutProps) {
             
         }else{
             setDisableHaircut("enabled")
-            
             const response = await api.get("/haircut",{
                 params:{
-                    status:false
+                    status:true
                 }
             })
 
@@ -88,7 +86,7 @@ export default function Haircuts({ haircuts }: listHaircutProps) {
                                     size="lg" 
                                     value={disableHaircut}
                                     onChange={(e:ChangeEvent<HTMLInputElement>)=>handleDisable(e)}    
-                                    isChecked={disableHaircut ==="disabled"?false:true}                               
+                                    isChecked={disableHaircut ==="enabled"?true:false}                               
                                 />
                             </Stack>
 
