@@ -1,14 +1,51 @@
-import { Flex, Text, Heading, Button ,Input, Select } from "@chakra-ui/react"
+import { Flex, Text, Heading, Button, Input, Select } from "@chakra-ui/react"
 import { ChangeEvent, useState } from "react"
 import Head from "next/head"
 import { Sidebar } from "@/src/componentes/sidebar"
 import Link from "next/link"
 import { canSSRAuth } from "@/src/utils/canSSRAuth"
+import { setupAPIClient } from "@/src/services/api"
 
-export default function () {
+import { useRouter } from "next/router"
 
-    const [customer,setCustomer] = useState('')
+interface HaircutProps {
+    id: string;
+    name: string;
+    price: number;
+    status: boolean;
+    user_id: string;
+}
 
+interface ListHaircutProps {
+    haircuts: HaircutProps[];
+}
+export default function ({ haircuts }: ListHaircutProps) {
+
+    const [customer, setCustomer] = useState('')
+    const [haircutSelected, setHaircutSelected] = useState(haircuts[0])
+    const router = useRouter()
+    function handleChangeSelect(id: string) {
+        const haircutItem = haircuts.find(item => item.id === id)
+        setHaircutSelected(haircutItem)
+    }
+
+    async function handleRegister() {
+        const api = setupAPIClient()
+        try {
+            if (customer ===""){
+                alert("Preencha o nome do client ")
+                return
+            }
+            await api.post("/schedule",{
+                customer:customer,
+                haircut_id:haircutSelected?.id
+            })
+            router.push("/dashboard")
+        } catch (error) {
+            console.log(error)
+            alert("Erro ao registar")
+        }
+    }
     return (
         <>
             <Head>
@@ -17,7 +54,7 @@ export default function () {
             <Sidebar>
                 <Flex direction="column" align="flex-start" justify="flex-start">
 
-                    <Flex 
+                    <Flex
                         direction="row"
                         w="100%"
                         align="center"
@@ -25,7 +62,7 @@ export default function () {
                     >
                         <Heading fontSize="3xl" mt={4} mb={4} mr={4}>
                             Novo corte
-                        </Heading>   
+                        </Heading>
                     </Flex>
 
                     <Flex
@@ -47,11 +84,15 @@ export default function () {
                             type="text"
                             bg="barber.900"
                             value={customer}
-                            onChange={(e:ChangeEvent<HTMLInputElement>)=>{setCustomer(e.target.value)}}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => { setCustomer(e.target.value) }}
                         />
 
-                        <Select bg="barber.900" mb={3} size="lg" w="85%">
-                            <option key={1} value="barbar completa" >barba completa</option>
+                        <Select bg="barber.900" mb={3} size="lg" w="85%" onChange={(e) => handleChangeSelect(e.target.value)}>
+
+                            {haircuts.map((haircut) => (
+                                <option key={haircut?.id} value={haircut?.id} >{haircut.name}</option>
+                            ))}
+
                         </Select>
 
                         <Button
@@ -59,7 +100,8 @@ export default function () {
                             size="lg"
                             color="gray.900"
                             bg="button.cta"
-                            _hover={{bg:"#ggFFb13e"}}
+                            _hover={{ bg: "#ggFFb13e" }}
+                            onClick={handleRegister}
 
                         >
                             Cadastrar
@@ -77,11 +119,31 @@ export default function () {
 
 }
 
-export const getServerSideProps =  canSSRAuth(async (ctx)=>{
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+    const api = setupAPIClient(ctx)
+    try {
+        const response = await api.get("/haircut", {
+            params: {
+                status: true,
+            }
+        })
 
-    return{
-        props:{
+        if (response.data === null) {
 
         }
+        return {
+            props: {
+                haircuts: response.data
+            }
+        }
+    } catch (err) {
+        console.log(err)
+        return {
+            redirect: {
+                destination: "/dashboard",
+                permanent: false
+            }
+        }
+
     }
 })
