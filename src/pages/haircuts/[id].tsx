@@ -57,7 +57,7 @@ export default function EditHeading({subscriptions,haircut}:EditHaircutProps){
             const api = setupAPIClient()
             await api.put("/haircut",{
                 name:name,
-                price: parseFloat(price),
+                price: parseFloat(String(price)),
                 status:status,
                 haircut_id:haircut?.id
             })

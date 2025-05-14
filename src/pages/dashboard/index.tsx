@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Flex, Text, Heading, Button, Link as ChakraLink, useMediaQuery } from "@chakra-ui/react"
+import { Flex, Text, Heading, Button, Link as ChakraLink, useMediaQuery , useDisclosure } from "@chakra-ui/react"
 import Link from 'next/link'
 import { IoMdPerson } from "react-icons/io"
 
@@ -7,11 +7,11 @@ import { canSSRAuth } from '@/src/utils/canSSRAuth'
 import { Sidebar } from '../../componentes/sidebar'
 import { setupAPIClient } from '@/src/services/api'
 import { useState } from 'react'
+import { ModalInfo } from '@/src/componentes/modal'
 
 
 
-
-interface ScheduleItem {
+export interface ScheduleItem {
     id: string;
     customer: string;
     haircut: {
@@ -28,7 +28,15 @@ interface DashboardProps {
 }
 export default function Dashboard({ schedule }: DashboardProps) {
     const [list, setList] = useState(schedule)
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [service, setService] = useState<ScheduleItem>()
     const [isMobile] = useMediaQuery("(max-width: 500px)")
+
+    function HandleOpenModal(item:ScheduleItem){
+        setService(item)
+        onOpen()
+
+    }
 
     return (
         <>
@@ -48,6 +56,7 @@ export default function Dashboard({ schedule }: DashboardProps) {
 
                     {list.map(item => (
                         <ChakraLink
+                            onClick={()=>HandleOpenModal(item)}
                             key={item.id}
                             w="100%"
                             m={0}
@@ -70,12 +79,12 @@ export default function Dashboard({ schedule }: DashboardProps) {
                             >
                                 <Flex direction="row" mb={isMobile ? 2 : 0} align="center" justify="center">
                                     <IoMdPerson size={28} color='#f1f1f1' />
-                                    <Text fontWeight="bold" ml={4} noOfLines={1}>{item.customer}</Text>
+                                    <Text fontWeight="bold" ml={4} noOfLines={1}>{item?.customer}</Text>
                                 </Flex>
 
-                                <Text fontWeight="bold" mb={isMobile ? 2 : 0}>{item.haircut.name}</Text>
+                                <Text fontWeight="bold" mb={isMobile ? 2 : 0}>{item?.haircut?.name}</Text>
 
-                                <Text fontWeight="bold" mb={isMobile ? 2 : 0} >{item.haircut.price}</Text>
+                                <Text fontWeight="bold" mb={isMobile ? 2 : 0} >{item?.haircut?.price}</Text>
                             </Flex>
 
                         </ChakraLink>
@@ -84,6 +93,13 @@ export default function Dashboard({ schedule }: DashboardProps) {
 
                 </Flex>
             </Sidebar>
+            <ModalInfo
+                isOpen={isOpen}
+                onOpen={onOpen}
+                onClose={onClose}
+                data={service}
+                finishService={async ()=>{}}
+            />
         </>
     )
 }
