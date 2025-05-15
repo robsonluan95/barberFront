@@ -105,7 +105,7 @@ export default function Dashboard({ schedule }: DashboardProps) {
 }
 
 //Criando controle de rotas
-//Aqui é no lado do servidor  
+//Aqui é no lado do servidor
 //o canSSRAuth é quem faz a validação
 
 export const getServerSideProps = canSSRAuth(async (ctx) => {
