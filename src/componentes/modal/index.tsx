@@ -36,17 +36,17 @@ export function ModalInfo({isOpen,onOpen,onClose,data,finishService}:ModalInfoPR
                 <ModalBody>
                     <Flex align="center" mb={3}>
                         <FiUser size={28} color="#FFb13e" />
-                        <Text ml={3} fontSize="2xl" fontWeight="bold" color="white">Robson Luan</Text>
+                        <Text ml={3} fontSize="2xl" fontWeight="bold" color="white">{data?.customer}</Text>
                     </Flex>
 
                     <Flex align="center" mb={3}>
                         <FiScissors size={28} color="#FFf" />
-                        <Text ml={3} fontSize="large" fontWeight="bold" color="white">Corte Completo</Text>
+                        <Text ml={3} fontSize="large" fontWeight="bold" color="white">{data?.haircut?.name}</Text>
                     </Flex>
 
                     <Flex align="center" mb={3}>
                         <FaMoneyBillAlt size={28} color="#46ef75" />
-                        <Text ml={3} fontSize="large" fontWeight="bold" color="white">R$ 59.90</Text>
+                        <Text ml={3} fontSize="large" fontWeight="bold" color="white">R$ {data?.haircut.price}</Text>
                     </Flex>
 
                     <ModalFooter>
@@ -55,6 +55,7 @@ export function ModalInfo({isOpen,onOpen,onClose,data,finishService}:ModalInfoPR
                             _hover={{bg:"#FFb13e"}}
                             color="#FFF"
                             mr={3}
+                            onClick={finishService}
                         >
                             Finalizar Servico
                         </Button>
