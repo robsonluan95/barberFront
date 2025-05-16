@@ -50,7 +50,12 @@ export function ModalInfo({isOpen,onOpen,onClose,data,finishService}:ModalInfoPR
                     </Flex>
 
                     <ModalFooter>
-                        <Button>
+                        <Button
+                            bg = "button.cta"
+                            _hover={{bg:"#FFb13e"}}
+                            color="#FFF"
+                            mr={3}
+                        >
                             Finalizar Servico
                         </Button>
                     </ModalFooter>
