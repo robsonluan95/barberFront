@@ -90,7 +90,7 @@ export default function ({ haircuts }: ListHaircutProps) {
                         <Select bg="barber.900" mb={3} size="lg" w="85%" onChange={(e) => handleChangeSelect(e.target.value)}>
 
                             {haircuts.map((haircut) => (
-                                <option key={haircut?.id} value={haircut?.id} >{haircut.name}</option>
+                                <option key={haircut?.id} value={haircut?.id} style={{backgroundColor:"#ececec", color:'#000'}} >{haircut.name}</option>
                             ))}
 
                         </Select>
@@ -100,7 +100,7 @@ export default function ({ haircuts }: ListHaircutProps) {
                             size="lg"
                             color="gray.900"
                             bg="button.cta"
-                            _hover={{ bg: "#ggFFb13e" }}
+                            _hover={{ bg: "#FFb13e" }}
                             onClick={handleRegister}
 
                         >

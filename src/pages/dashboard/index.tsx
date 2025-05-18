@@ -74,7 +74,7 @@ export default function Dashboard({ schedule }: DashboardProps) {
                         <Heading fontSize="3xl" mt={4} mb={4} mr={4}>Agenda</Heading>
 
                         <Link href='/new'>
-                            <Button>Registrar</Button>
+                            <Button bg="button.cta" color="white" _hover={{background:"gray.700"}}>Registrar</Button>
                         </Link>
                     </Flex>
 
