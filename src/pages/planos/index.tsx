@@ -12,6 +12,10 @@ interface PlanosProps{
 export default function Planos({premium}:PlanosProps){
     const [isMobile] = useMediaQuery('(max-width: 500px)')
 
+    async function handleSubscribe(){
+        alert("TESTE")
+    }
+
     return(
 
         <>
@@ -66,7 +70,7 @@ export default function Planos({premium}:PlanosProps){
                                 bg={premium ? 'transparent' : 'button.cta'}
                                 m={2}
                                 color="white"
-                                onClick={()=>{}}
+                                onClick={()=>{handleSubscribe}}
                                 disabled={premium}
                             >   
                                 {premium ? (
