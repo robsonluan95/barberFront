@@ -4,6 +4,7 @@ import { Sidebar } from "@/src/componentes/sidebar";
 import { canSSRGuest } from "@/src/utils/canSSRGuest";
 import { setupAPIClient } from "@/src/services/api";
 import { canSSRAuth } from "@/src/utils/canSSRAuth";
+import {getStripeJs} from '../../services/stripe-js'
 
 interface PlanosProps{
     premium:boolean;
@@ -13,7 +14,22 @@ export default function Planos({premium}:PlanosProps){
     const [isMobile] = useMediaQuery('(max-width: 500px)')
 
     async function handleSubscribe(){
-        alert("TESTE")
+        if(premium){
+            return
+        }
+
+        try{
+            const api = setupAPIClient()
+            const response = await api.post('/subscribe')
+            const {sessionId} = response.data
+            
+            const stripe = await getStripeJs()
+            await stripe.redirectToCheckout({sessionId:sessionId})
+
+
+        }catch(err){
+            console.log(err)
+        }
     }
 
     return(
@@ -70,7 +86,7 @@ export default function Planos({premium}:PlanosProps){
                                 bg={premium ? 'transparent' : 'button.cta'}
                                 m={2}
                                 color="white"
-                                onClick={()=>{handleSubscribe}}
+                                onClick={()=>{handleSubscribe()}}
                                 disabled={premium}
                             >   
                                 {premium ? (
